@@ -2683,7 +2683,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         if (currentChat != null) {
             chatInfo = getMessagesController().getChatFull(currentChat.id);
             groupCall = getMessagesController().getGroupCall(currentChat.id, true);
-            if (ChatObject.isChannel(currentChat) && !getMessagesController().isChannelAdminsLoaded(currentChat.id)) {
+            if (ChatObject.isChannel(currentChat) && ChatObject.hasAdminRights(currentChat) && !getMessagesController().isChannelAdminsLoaded(currentChat.id)) {
                 getMessagesController().loadChannelAdmins(currentChat.id, true);
             }
             fillInviterId(false);
@@ -2844,7 +2844,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 getMessagesController().loadMessages(dialog_id, mergeDialogId, loadInfo, initialMessagesSize, startLoadFromMessageId, 0, true, 0, classGuid, 2, 0, chatMode, threadMessageId, replyMaxReadId, lastLoadIndex++, isTopic);
             }
         }
-        if ((chatMode == 0 || chatMode == MODE_SAVED && getSavedDialogId() == getUserConfig().getClientUserId()) && (!isThreadChat() || isTopic)) {
+        if ((chatMode == 0 || chatMode == MODE_SAVED && getSavedDialogId() == getUserConfig().getClientUserId()) && (!isThreadChat() || isTopic) && ((ChatObject.isChannel(currentChat) && ChatObject.hasAdminRights(currentChat)) || !ChatObject.isChannel(currentChat))) {
             waitingForLoad.add(lastLoadIndex);
             getMessagesController().loadMessages(dialog_id, mergeDialogId, false, 1, 0, 0, true, 0, classGuid, 2, 0, MODE_SCHEDULED, chatMode == MODE_SAVED ? 0 : threadMessageId, replyMaxReadId, lastLoadIndex++, isTopic);
         }
@@ -26353,7 +26353,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 pinnedImageLocation = null;
                 pinnedImageLocationObject = null;
                 changed = hidePinnedMessageView(animated);
-                if (loadingPinnedMessages.indexOfKey(pinned_msg_id) < 0) {
+                if (pinned_msg_id != 0 && loadingPinnedMessages.indexOfKey(pinned_msg_id) < 0) {
                     loadingPinnedMessages.put(pinned_msg_id, true);
                     ArrayList<Integer> ids = new ArrayList<>();
                     ids.add(pinned_msg_id);

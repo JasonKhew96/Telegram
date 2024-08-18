@@ -6626,7 +6626,9 @@ public class MessagesController extends BaseController implements NotificationCe
             TLRPC.TL_channels_getFullChannel req = new TLRPC.TL_channels_getFullChannel();
             req.channel = getInputChannel(chat);
             request = req;
-            loadChannelAdmins(chatId, !loaded);
+            if (ChatObject.hasAdminRights(chat)) {
+                loadChannelAdmins(chatId, !loaded);
+            }
         } else {
             TLRPC.TL_messages_getFullChat req = new TLRPC.TL_messages_getFullChat();
             req.chat_id = chatId;
